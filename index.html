@@ -1,0 +1,92 @@
+<!doctype html>
+<html ng-app="trackers">
+  <head>
+    <script src="inc/jquery-1.10.2.min.js"></script>
+    <!--<script src="inc/typeahead.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+    <script src="inc/addTagger.js"></script>
+    <script src="inc/ui-bootstrap-tpls-0.6.0.min.js"></script>
+    <script src="app.js"></script>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="app.css" rel="stylesheet">
+    <link href="inc/addTagger.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div class="navbar navbar-static-top">
+      <div class="navbar-inner">
+        <a class="brand" href="#">Lame name timetracker <span class="label label-warning">alpha!</span></a>
+        <ul class="nav">
+          <li><a href="ajax.php?q=syncClients">Sync clients</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="span6">
+          <h3>Overview</h3>
+          <div ng-controller="OverviewCtrl">
+            <form class="form-inline">
+              <div class="input-append">
+                <input class="input-small" datepicker-popup="dd-MM-yyyy" ng-model="overview.from" is-open="fromOpen" type="text">
+                <span class="add-on"><i class="icon-calendar"></i></span>
+              </div>
+
+              <div class="input-append">
+                <input class="input-small" datepicker-popup="dd-MM-yyyy" ng-model="overview.to" is-open="toOpen" type="text">
+                <span class="add-on"><i class="icon-calendar"></i></span>
+              </div>
+              <button class="btn" ng-click="reloadOverview()"><i class="icon-refresh"></i></button>
+            </form>
+          <table class="unstyled table table-condensed">
+            <tr ng-repeat="tracker in trackers" >
+                <td>
+                  <span>{{tracker.name}}</a>@{{tracker.client}}<span class="label label-info"> {{tracker.time}} </span>
+                  <span ng-controller="ListCtrl" ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+                    <form class="form-inline" ng-hide="registerSuccess(tracker.register_status)">
+                      <select ng-model="tracker.category" ng-options="option.value as option.key for option in registerForm.categories">
+                    </select>
+                      <select ng-model="tracker.client_id" ng-options="option.value as option.key for option in registerForm.clients">
+                    </select>
+                    <div class="input-append">
+                      <input class="input-small" datepicker-popup="dd-MM-yyyy" ng-model="tracker.timestamp" type="text">
+                      <span class="add-on"><i class="icon-calendar"></i></span>
+                    </div>
+                    <button class="btn" ng-click="register(tracker)" type="submit">Register</button>
+                  </form>
+                  <span class="label label-success">{{tracker.register_message}}</span>
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+      <div class="span6">
+        <h3>Tracker</h3>
+        <div ng-controller="CreateCtrl">
+          <form>
+            <div class="input-append">
+              <input type="text" name="input" class="span5" typeaheadtagger="" datasets="example" ng-model="tracker.input">
+              <button class="btn btn-info" ng-click="save()"><i class="icon-time icon-white"></i> Start</button>
+            </div>
+        </form>
+        </div>
+        <div ng-controller="ListCtrl">
+          <table class="unstyled table table-condensed">
+            <tr ng-repeat="tracker in trackers" ng-class="{info:tracker.start}"  >
+              <td>
+                <span ng-class="{active:tracker.start}">{{tracker.name}}</a>@{{tracker.client}}<span class="label label-info"> {{tracker.time}} </span>
+                  <span ng-hide="tracker.start" ng-click="start(tracker)" class="btn btn-mini btn-success">Start</span>
+                  <span ng-show="tracker.start" ng-click="stop(tracker)" class="btn btn-mini btn-warning">Stop</span>
+                  <span ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+              </span>
+            </td>
+            </tr>
+          </table>
+        </div>
+    </div>
+  </div>
+</div>
+  </body>
+</html>

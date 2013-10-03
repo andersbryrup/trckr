@@ -1,0 +1,159 @@
+<?php
+if ( isset($_POST['action']) && $_POST['action'] == 'login' )
+{
+  try
+  {
+    require 'class.sugarCrmConnector.php';
+    $sugar = sugarCrmConnector::getInstance( $_POST['username'], $_POST['password'] ); 
+    $sessionID = $sugar->getSessionID();
+    setcookie('sessionID',$sessionID);
+    header('Location: http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']);
+    die();
+  }
+  catch(Exception $e)
+  {
+    $error = $e->getMessage();
+  }
+}
+?>
+<?php echo '<?xml version="1.0" encoding="utf-8"?>'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--[if lt IE 7 ]> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="da" lang="da" class="ie ie6 ielt8"> <![endif]-->
+<!--[if IE 7 ]>    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="da" lang="da" class="ie ie7 ielt8">  <![endif]-->
+<!--[if IE 8 ]>    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="da" lang="da" class="ie ie8"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="da" lang="da"> <!--<![endif]-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Timereg</title>
+    <meta name="MSSmartTagsPreventParsing" content="TRUE" />
+    <link href="reset.css" rel="stylesheet" type="text/css" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+<?php
+if ( !isset($_COOKIE['sessionID']) )
+{
+  if (isset($error))
+  {
+    echo $error;
+  }
+?>
+
+<form action="SugarCrmSoap.php" method="post" accept-charset="utf-8">
+  <p>
+    <label>Username:</label>
+    <input type="text" name="username" value="" />
+  </p>
+  <p>
+    <label>Password:</label>
+    <input type="password" name="password" value="" />
+  </p>
+  <p><input type="submit" value="Continue &rarr;" /></p>
+  <input type="hidden" name="action" value="login" />
+</form>
+
+<?php
+}
+else
+{
+?>
+
+
+<form action="#" method="post" accept-charset="utf-8" id="time_form">
+
+<p>
+  <label for="cases">Case:</label>
+  <select name="case_id" id="cases" size="20">
+  </select>
+</p>
+
+<p>
+<label>Tid:</label>
+<input type="text" name="hours" value="" id="hours"/>
+</p>
+
+<p>
+<label>Kategori:</label>
+<select name="category">
+  <option value="1">Account Management</option>
+  <option value="2">Admin</option>
+  <option value="3">Analyse og design</option>
+  <option value="4">Consulting</option>
+  <option value="5">Design og layout</option>
+  <option value="6">Dokumentation / vejledninger</option>
+  <option value="7">Drift</option>
+  <option value="8">HTML</option>
+  <option value="9">Installation</option>
+  <option value="10">Møde</option>
+  <option value="11">OS Bidrag max 2 timer per uge</option>
+  <option value="12">Opgradering af Postnuke</option>
+  <option value="13">Pre-sales</option>
+  <option value="14">Projektledelse</option>
+  <option value="15">Support</option>
+  <option value="16">Test</option>
+  <option value="17" selected="">Udvikling</option>
+  <option value="18">Undervisning</option>
+</select>
+</p>
+
+<p>
+<label for="description">Beskrivelse:</label>
+<input type="text" name="description" value="" id="description"/>
+</p>
+
+<p>
+<label for="comment">Kommentar:</label>
+<input type="text" name="comment" value="" id="comment" />
+</p>
+
+<p>
+<label for="day">Dag:</label>
+<input type="text" name="day" value="<?php echo date('d')?>" />
+</p>
+
+<p>
+<label for="month">Måned:</label>
+<select name="month" id="month">
+<?php
+
+$months = array(
+'januar'    => '01',
+'februar'   => '02',
+'marts'     => '03',
+'april'     => '04',
+'maj'       => '05',
+'juni'      => '06',
+'juli'      => '07',
+'august'    => '08',
+'september' => '09',
+'oktober'   => '10',
+'november'  => '11',
+'december'  => '12',
+  );
+
+foreach ($months as $key => $value) 
+{
+  echo '<option value="'.$value.'" '. (date('m') == $value ? 'selected=""' : '' ) .'>'.$key.'</option>'; 
+}
+?>
+</select>
+</p>
+
+<p>
+<label for="year">År:</label>
+<input type="text" name="year" value="<?php echo date('Y')?>" />
+</p>
+
+<p><input type="submit" value="Gem" /></p>
+</form>
+
+<div id="log"></div>
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
+  <script type="text/javascript" src="timereg.js"></script>
+<?php
+}
+?>
+  </body>
+</html>

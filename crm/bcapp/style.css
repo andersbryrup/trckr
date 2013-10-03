@@ -1,0 +1,42 @@
+body {
+  font-size: 12px;
+  padding: 5px;
+}
+
+#time_form {
+  width: 600px;
+}
+
+label {
+  width: 150px;
+  display: block;
+  float: left;
+}
+
+label.error {
+  float: right;
+  width: 200px;
+}
+
+input {
+  border: 1px solid #000;
+  padding: 2px;
+}
+
+input.error {
+  border-color: #f00;
+}
+
+p {
+  margin: 0.5em 0;
+}
+
+#cases {
+  width: 330px;
+}
+
+#refresh_cases {
+  margin-top: 1em;
+  float: left;
+  clear: both;
+}
