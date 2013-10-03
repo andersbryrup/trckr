@@ -20,6 +20,11 @@ angular.module('trackers',  ['ui.bootstrap'])
           return result.data;
         });
       },
+      getinfo : function(tracker) {
+        return $http.get('ajax.php?q=getTrackerInfo&id='+tracker.id).then(function(result) {
+          return result.data;
+        });
+      },
       save : function(tracker) {
         tracker.action = "saveTracker";
 
@@ -118,10 +123,16 @@ function ListCtrl($scope, $modal, Trackers, $timeout){
   };
 
   $scope.start = function(tracker) {
+    // Set tracker start, so the tracker is updated as active, right away
+    // instead of waiting for the ajax callback.
+    tracker.start = 1;
     Trackers.start(tracker);
   };
 
   $scope.stop = function(tracker) {
+    // Same shit as before, unset tracker start, so it looks like the stuff
+    // responds right away
+    tracker.start = null;
     Trackers.stop(tracker);
   };
 }
@@ -179,19 +190,15 @@ function OverviewCtrl($scope, $timeout, $log, Trackers){
   updateOverview();
 
   $scope.register = function(tracker){
-    $log.error(tracker);
     Trackers.register(tracker);
+    var info = Trackers.getinfo(tracker);
+    tracker = info;
   };
 
   $scope.reloadOverview = function(){
     updateOverview();
   };
   // Various listeners for updating trackers
-  // On updated trackers
-  $scope.$on('trackersUpdated', function() {
-    updateOverview();
-  });
-
   // On changed values in datepicker
   $scope.$watch('overview.from', function(){
     updateOverview();

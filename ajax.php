@@ -1,16 +1,17 @@
 <?php
 require 'crm/class.sugarRegisterHandler.php';
+require 'config.php';
 header('Content-type: application/json');
 
+// angular $http.post doesnt do regular post, instead we read from
+// input. previously jquery was used, which post's in a "regular" 
+// manner. This is a lovely quick hack.
 $input = json_decode(file_get_contents('php://input'));
 if(is_object($input)){
   foreach($input as $key => $value){
     $_POST[$key] = $value;
   }
 }
-
-define('CRMUSERNAME', 'hell');
-define('CRMPASSWORD', 'no!');
 
 $pdo = new PDO('sqlite:time.db');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
@@ -75,7 +76,13 @@ if(!empty($_POST)){
 
     $item = $tracker->getTrackerInfo($_POST['id']);
 
-    $timestamp = $item['timestamp'];
+    // remember to divide by 1000, this is a js timestamp in ms
+    $timestamp = $_POST['timestamp'] / 1000;
+ 
+    if(!is_numeric($_POST['timestamp'])){
+      $timestamp = strtotime($_POST['timestamp']);
+    }
+
     $time = $item['time'];
     $case_id = $_POST['client_id'];
     $category = $_POST['category'];
@@ -89,7 +96,6 @@ if(!empty($_POST)){
     else {
       $tracker->registerTracker($_POST['id'], $status['msg'], 'failure');
     }
-
   }
 } else {
   if(!empty($_GET)){
