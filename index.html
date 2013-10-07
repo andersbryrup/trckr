@@ -79,8 +79,12 @@
                   <span ng-hide="tracker.start" ng-click="start(tracker)" class="btn btn-mini btn-success">Start</span>
                   <span ng-show="tracker.start" ng-click="stop(tracker)" class="btn btn-mini btn-warning">Stop</span>
                   <span ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
-              </span>
-            </td>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td>Total in list: {{timeTotal(trackers)}}
+              </td>
             </tr>
           </table>
         </div>

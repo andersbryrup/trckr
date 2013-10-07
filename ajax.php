@@ -96,6 +96,11 @@ if(!empty($_POST)){
     else {
       $tracker->registerTracker($_POST['id'], $status['msg'], 'failure');
     }
+
+    $info = $tracker->getTrackerInfo($_POST['id']);
+
+    print json_encode($info);
+    return;
   }
 } else {
   if(!empty($_GET)){

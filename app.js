@@ -1,5 +1,5 @@
 angular.module('trackers',  ['ui.bootstrap'])
-  .factory('Trackers', function($rootScope, $http, $log){
+  .factory('Trackers', function($rootScope, $http, $log, $q){
     var registerForm = function(){
       $form = null;
 
@@ -21,9 +21,11 @@ angular.module('trackers',  ['ui.bootstrap'])
         });
       },
       getinfo : function(tracker) {
-        return $http.get('ajax.php?q=getTrackerInfo&id='+tracker.id).then(function(result) {
-          return result.data;
+        var deferred = $q.defer();
+        $http.get('ajax.php?q=getTrackerInfo&id='+tracker.id).success(function(data) {
+          deferred.resolve(data);
         });
+        return deferred.promise;
       },
       save : function(tracker) {
         tracker.action = "saveTracker";
@@ -70,7 +72,7 @@ angular.module('trackers',  ['ui.bootstrap'])
       register: function(tracker){
         tracker.action = "registerTracker";
         $http.post('ajax.php', tracker).success(function(data){
-          $rootScope.$broadcast("overviewUpdate");
+          //$rootScope.$broadcast("overviewUpdate");
         });
       }
     };
@@ -90,7 +92,7 @@ angular.module('trackers',  ['ui.bootstrap'])
   });
 
 
-function ListCtrl($scope, $modal, Trackers, $timeout){
+function ListCtrl($scope, $modal, Trackers, $timeout, $log){
   $scope.trackers = Trackers.get();
 
   $scope.$on('trackersUpdated', function() {
@@ -106,6 +108,29 @@ function ListCtrl($scope, $modal, Trackers, $timeout){
 
   myIntervalFunction();
 
+  $scope.timeTotal = function(trackers){
+    if(typeof trackers === 'object'){
+      var total = null;
+      angular.forEach(trackers, function(tracker){
+        splitTime = tracker.time.split(':');
+        total += parseInt(splitTime[0] * 60);
+        total += parseInt(splitTime[1]);
+      });
+
+      hours = Math.floor(total / 60);
+      minutes = total % 60;
+
+      if(hours < 10){
+        hours = '0' + hours;
+      }
+      if(minutes < 10){
+        minutes = '0' + minutes;
+      }
+
+
+      return hours + ':' + minutes;
+    }
+  }
 
   $scope.edit = function(tracker) {
 
@@ -181,9 +206,17 @@ function OverviewCtrl($scope, $timeout, $log, Trackers){
   };
 
   // Set up datepickers
+  var today = new Date();
+  var yesterday = new Date();
+  
+  today.setHours(23, 59, 0, 0);
+
+  yesterday.setDate(yesterday.getDate() -1);
+  yesterday.setHours(0,0,0,0);
+
   $scope.overview = {
-    to: new Date(),
-    from: (function(){this.setDate(this.getDate()-1); return this;}).call(new Date())
+    to: today,
+    from: yesterday
   };
 
   // Initial load
@@ -191,8 +224,13 @@ function OverviewCtrl($scope, $timeout, $log, Trackers){
 
   $scope.register = function(tracker){
     Trackers.register(tracker);
-    var info = Trackers.getinfo(tracker);
-    tracker = info;
+    
+    // This is when it got a little wierd.
+    Trackers.getinfo(tracker).then(function(data){
+      // For some reason we have to do this
+      tracker.register_status = data.register_status;
+      tracker.register_message = data.register_message;
+    });
   };
 
   $scope.reloadOverview = function(){
