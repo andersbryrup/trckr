@@ -6,17 +6,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
     <script src="inc/addTagger.js"></script>
     <script src="inc/ui-bootstrap-tpls-0.6.0.min.js"></script>
-    <script src="app.js"></script>
+    <script src="js/app.js"></script>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
 
   </head>
   <body>
-    <div class="navbar navbar-static-top">
+    <div class="navbar navbar-static-top" ng-controller="NavCtrl">
       <div class="navbar-inner">
         <a class="brand" href="#">Trckr <span class="label label-warning">alpha!</span></a>
         <ul class="nav">
-          <li><a href="ajax.php?q=syncClients">Sync clients</a></li>
+          <li><a href="#" ng-click="syncClients()">Sync clients</a></li>
         </ul>
       </div>
     </div>
@@ -40,8 +40,11 @@
           <table class="unstyled table table-condensed">
             <tr ng-repeat="tracker in trackers" >
                 <td>
-                  <span>{{tracker.name}}</a>@{{tracker.client}}<span class="label label-info"> {{tracker.time}} </span>
-                  <span ng-controller="ListCtrl" ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+                  <span>{{tracker.name}}</a>@{{tracker.client}}
+                    <span class="pull-right">
+                      <span class="label label-info"> {{tracker.time}} </span>
+                      <span ng-controller="ListCtrl" ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+                    </span>
                     <form class="form-inline" ng-hide="registerSuccess(tracker.register_status)">
                       <select ng-model="tracker.category" ng-options="option.value as option.key for option in registerForm.categories">
                     </select>
@@ -75,10 +78,13 @@
           <table class="unstyled table table-condensed">
             <tr ng-repeat="tracker in trackers" ng-class="{info:tracker.start}"  >
               <td>
-                <span ng-class="{active:tracker.start}">{{tracker.name}}</a>@{{tracker.client}}<span class="label label-info"> {{tracker.time}} </span>
-                  <span ng-hide="tracker.start" ng-click="start(tracker)" class="btn btn-mini btn-success">Start</span>
-                  <span ng-show="tracker.start" ng-click="stop(tracker)" class="btn btn-mini btn-warning">Stop</span>
-                  <span ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+                <span ng-class="{active:tracker.start}">{{tracker.name}}</a>@{{tracker.client}}
+                  <span class="pull-right">
+                    <span class="label label-info"> {{tracker.time}} </span>
+                    <span ng-hide="tracker.start" ng-click="start(tracker)" class="btn btn-mini btn-success">Start</span>
+                    <span ng-show="tracker.start" ng-click="stop(tracker)" class="btn btn-mini btn-warning">Stop</span>
+                    <span ng-click="edit(tracker)" class="btn btn-mini">Edit</span>
+                  </span>
                 </span>
               </td>
             </tr>

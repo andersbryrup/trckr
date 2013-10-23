@@ -46,7 +46,7 @@ class registerHandler {
         'msg'              => $e->getMessage(), 
       );
     }
-    file_put_contents('cases', serialize($return['casesToAccounts']));
+    file_put_contents(__DIR__.'/cases', serialize($return['casesToAccounts']));
     return $return;
   }
 
@@ -57,7 +57,7 @@ class registerHandler {
   public function register($timestamp, $time, $case_id, $description, $type){
     $userID = $this->sugar->getUserID();
 
-    $cases = unserialize(file_get_contents('cases'));
+    $cases = unserialize(file_get_contents(__DIR__.'/cases'));
 
     $account_id = $cases[$case_id];
 

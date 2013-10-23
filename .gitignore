@@ -1,0 +1,8 @@
+# Ignore users db #
+###################
+time.db
+crm/cases
+
+# Ignore config #
+#################
+config.php

@@ -79,8 +79,8 @@ angular.module('trackers',  ['ui.bootstrap'])
   })
   .directive('typeaheadtagger', function($log){
     return {
-      link: function(scope, element) {
-        element.addTagger();
+      link: function(scope, element, attrs) {
+        element.addTagger(attrs.typeaheadtagger);
 
         element.bind('tagger:select', function(object, data){
           scope.$apply(function() {
@@ -137,7 +137,7 @@ function ListCtrl($scope, $modal, Trackers, $timeout, $log){
     var editTracker = tracker;
 
     var modalInstance = $modal.open({
-      templateUrl: 'editTrackerModal.html',
+      templateUrl: 'tpl/editTrackerModal.html',
       controller: ModalEditCtrl,
       resolve : {
         tracker : function(){
@@ -205,6 +205,7 @@ function OverviewCtrl($scope, $timeout, $log, Trackers){
     return false;
   };
 
+
   // Set up datepickers
   var today = new Date();
   var yesterday = new Date();
@@ -244,5 +245,25 @@ function OverviewCtrl($scope, $timeout, $log, Trackers){
 
   $scope.$watch('overview.to', function(){
     updateOverview();
+  });
+}
+
+function NavCtrl($scope, $modal){
+  $scope.syncClients = function(){
+    
+    var modalInstance = $modal.open({
+      templateUrl: 'tpl/syncClientsModal.html',
+      controller: SyncClientsCtrl,
+      backdrop: 'static'
+    });
+  }
+}
+
+function SyncClientsCtrl($scope, $http, $modalInstance, $timeout){
+  $http.get('ajax.php?q=syncClients').then(function(result) {
+    $scope.message = result.data.msg;
+    $timeout(function(){
+      $modalInstance.close();
+    }, 1000);
   });
 }

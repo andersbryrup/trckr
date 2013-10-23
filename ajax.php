@@ -161,6 +161,7 @@ if(!empty($_POST)){
       foreach($cases['cases'] as $key => $value){
         $tracker->saveClient($value['name'], $value['id']);
       }
+      print json_encode(array('msg' => 'Sync completed'));
       return;
     }
 
