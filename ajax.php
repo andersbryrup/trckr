@@ -4,7 +4,7 @@ require 'config.php';
 header('Content-type: application/json');
 
 // angular $http.post doesnt do regular post, instead we read from
-// input. previously jquery was used, which post's in a "regular" 
+// input. previously jquery was used, which post's in a "regular"
 // manner. This is a lovely quick hack.
 $input = json_decode(file_get_contents('php://input'));
 if(is_object($input)){
@@ -43,9 +43,9 @@ if(!empty($_POST)){
 
       }
       $exp_array = explode('@', $input);
-      
-      $task = $exp_array[0]; 
-      $client = $exp_array[1]; 
+
+      $task = $exp_array[0];
+      $client = $exp_array[1];
 
       $id = $tracker->addTracker($task, $time, $client );
 
@@ -78,7 +78,7 @@ if(!empty($_POST)){
 
     // remember to divide by 1000, this is a js timestamp in ms
     $timestamp = $_POST['timestamp'] / 1000;
- 
+
     if(!is_numeric($_POST['timestamp'])){
       $timestamp = strtotime($_POST['timestamp']);
     }
@@ -145,7 +145,7 @@ if(!empty($_POST)){
     }
 
     if($_GET['q'] == 'getClients'){
-      $cases = $tracker->getClients(); 
+      $cases = $tracker->getClients();
 
       print json_encode($cases);
       return;
@@ -172,8 +172,8 @@ if(!empty($_POST)){
         $categoryOptions[] = array('key' => $name , 'value' => $id);
       }
 
-      $cases = $tracker->getClients(); 
-      
+      $cases = $tracker->getClients();
+
       $clientOptions = '';
 
       foreach($cases as $case){
@@ -225,7 +225,7 @@ class Tracker {
       ':time' => $time,
       ':client' => $client)
     );
-   
+
     return $this->dbh->LastInsertId();
   }
 
@@ -250,7 +250,7 @@ class Tracker {
       ':name' => $name,
       ':id' => $id)
     );
-   
+
     return $this->dbh->LastInsertId();
   }
 
@@ -262,7 +262,7 @@ class Tracker {
   }
 
   public function getTrackers(){
-    $time = time() - 30000;
+    $time = strtotime('midnight');
 
     $sql = 'SELECT * FROM `trackers` WHERE timestamp >= :timestamp ORDER BY timestamp DESC';
     $stmt = $this->dbh->prepare($sql);
@@ -289,10 +289,10 @@ class Tracker {
     $time = (time() - $row['start']);
 
     $time = $row['time'] + $time;
-   
-    $sql = 'UPDATE 
+
+    $sql = 'UPDATE
       `trackers`
-      SET 
+      SET
       start = NULL,
       time = :time
       WHERE
@@ -303,9 +303,9 @@ class Tracker {
   }
 
   public function startTracker($id){
-    $sql = 'UPDATE 
+    $sql = 'UPDATE
       `trackers`
-      SET 
+      SET
       start = :start
       WHERE
       id = :id';
@@ -315,7 +315,7 @@ class Tracker {
   }
 
   public function deleteTracker($id){
-    $sql = 'DELETE FROM 
+    $sql = 'DELETE FROM
       `trackers`
       WHERE
       id = :id';
@@ -325,15 +325,15 @@ class Tracker {
   }
 
   public function updateTracker($post){
-  
+
     $time_exp = explode(':', $post['time']);
 
     $start = $post['start'] ? time() : NULL;
 
     $time = ($time_exp[0] * 3600) + ($time_exp[1] * 60);
-    $sql = 'UPDATE 
+    $sql = 'UPDATE
       `trackers`
-      SET 
+      SET
       name = :name,
       client = :client,
       time = :time,
@@ -353,9 +353,9 @@ class Tracker {
   }
 
   public function registerTracker($id, $message, $status){
-    $sql = 'UPDATE 
+    $sql = 'UPDATE
       `trackers`
-      SET 
+      SET
       registered = :registered,
       register_message = :register_message,
       register_status = :register_status
